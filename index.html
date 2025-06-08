@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>PLC Control Panel</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Contoh struktur status bar baru -->
+<div id="status-bar">
+  <div class="status-cell">
+    <div id="esp32-status">ESP32: ...</div>
+    <div id="esp32-ip" style="cursor: pointer; color: #0077cc; text-decoration: underline;">Isikan Alamat IP ESP32</div>
+  </div>
+  <div class="status-cell">
+    <div id="plc-status">PLC: ...</div>
+    <div id="plc-ip" style="cursor: pointer; color: #0077cc; text-decoration: underline;">Isikan Alamat IP PLC</div>
+  </div>
+  <div class="status-cell">
+    <div><span class="indicator" id="M19-indicator"></span></div>
+    <div><button class="tester-btn" id="M9">PING</button></div>
+  </div>
+</div>
+
+  <!-- Mode Buttons -->
+  <div class="section" id="mode-section">
+    <h2>Operation Modes</h2>
+    <div id="mode-buttons">
+      <button class="btn mode-btn" id="M3">DOL</button>
+      <button class="btn mode-btn" id="M4">ON Delay</button>
+      <button class="btn mode-btn" id="M5">OFF Delay</button>
+      <button class="btn mode-btn" id="M6">Berurutan</button>
+      <button class="btn mode-btn" id="M7">Bergantian</button>
+      <button class="btn mode-btn" id="M8">Star Delta</button>
+    </div>
+  </div>
+
+  <!-- Output Status -->
+  <div class="section">
+    <h2 style="margin-top: 25px;">PLC Output Status</h2>
+    <div class="output-status">
+      <div class="output-item">
+        Q0.0
+        <div class="output-circle" id="M20-indicator"></div>
+      </div>
+      <div class="output-item">
+        Q0.1
+        <div class="output-circle" id="M21-indicator"></div>
+      </div>
+      <div class="output-item">
+        Q0.2
+        <div class="output-circle" id="M22-indicator"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Control Buttons -->
+  <div class="section" id="control-section" style="display: none;">
+    <h2>Main Controls</h2>
+    <button class="btn control-btn" id="M0">Back</button>
+    <button class="btn control-btn" id="M1">ON1</button>
+    <button class="btn control-btn" id="M2">ON2</button>
+  </div>
+
+<script src="script.js"></script>
+<script> 
+document.addEventListener("DOMContentLoaded", () => {
+    espIp = localStorage.getItem("esp32IP") || "";
+    if (!espIp) {
+        espIp = prompt("Masukkan IP ESP32:");
+        if (espIp) localStorage.setItem("esp32IP", espIp);
+    }
+
+    if (espIp) {
+        // "Nebeng" momentary press M9 untuk trigger ping saat load
+        handleMomentaryPress("M9");
+    }
+});
+</script>
+
+</body>
+</html>

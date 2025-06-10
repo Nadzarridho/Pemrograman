@@ -36,7 +36,7 @@
          <div class="content"><h2 ><u>Bukti Kehadiran</u></h2></div>
          <div class="content"><h3 >--- Aku duduk sama siapa ya? ---</h3></div>
          <div class="content">
-            <img src="assets/image/dokumentasi.png" alt="loading" width="100%" height="auto">
+            <img src="assets/image/dokumentasi.png" alt="Girl in a jacket" width="100%" height="auto">
          </div>
       </div>
    </div>   
@@ -162,9 +162,582 @@
       <div class="container-content" style="width: 70%;">
          <div class="content"><h2 ><u>Dokumentasi Projek</u></h2></div>
          <div class="content"><h3 >--- Code Embed ---</h3></div>
-            <div>
+            <div class="content">
             <script src="https://gist.github.com/Nadzarridho/781bd5ba3a36fed355652e5f57971eb9.js"></script>
             </div> 
+         <div class="content">
+            <textarea rows="40" cols="120" readonly>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Antarmuka PLC</title>
+  <link rel="icon" type="image/png" href="icon.ico" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #fefefe;
+      user-select: none;
+    }
+
+    #header {
+      text-align: center;
+      margin-bottom: 1rem;
+      font-family: Arial, sans-serif;
+    }
+
+    .title-small {
+      font-size: 1rem;
+      color: #444;
+      margin-bottom: 0.2rem;
+    }
+
+    .title-large {
+      font-size: 1.8rem;
+      font-weight: bold;
+      line-height: 1.2;
+      margin-bottom: 0.2rem;
+    }
+
+    .title-footer {
+      font-size: 0.8rem;
+      color: #888;
+    }
+
+    /* === STATUS BAR === */
+    #status-bar {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: auto auto;
+      gap: 4px 8px;
+      text-align: center;
+      background-color: #f1f1f1;
+      border-radius: 8px;
+      padding: 8px;
+      font-size: 0.9em;
+      max-width: 600px;
+      margin: 0 auto 25px auto;
+    }
+
+    .status-cell {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 4px;
+    }
+
+    .indicator {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background-color: #ccc;
+      transition: background-color 0.3s ease;
+    }
+
+    .indicator.active {
+      background-color: #27ae60;
+    }
+
+    .tester-btn {
+      padding: 4px 10px;
+      font-size: 0.8em;
+      border: none;
+      border-radius: 4px;
+      background-color: #e67e22;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.2s ease, transform 0.2s ease;
+    }
+
+    .section {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 10px;
+      font-size: 1.3em;
+      color: #333;
+    }
+
+    .btn {
+      padding: 10px;
+      margin: 4px;
+      font-size: 1em;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+
+    .btn:active {
+      transform: scale(0.96);
+    }
+
+    .btn.disconnected {
+      opacity: 0.4;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .control-btn {
+      background-color: #3498db;
+      color: white;
+      padding: 14px 24px;
+      border-radius: 8px;
+      font-weight: bold;
+      transition: all 0.25s ease;
+    }
+
+    .control-btn.active {
+      transform: scale(0.94);
+      opacity: 0.7;
+      cursor: default;
+      pointer-events: none;
+    }
+
+    .mode-btn {
+      background-color: #1fae55;
+      color: white;
+      width: 120px;
+      height: 50px;
+      margin: 4px;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      transition: all 0.25s ease;
+    }
+
+    .mode-btn.active {
+      transform: scale(1.12);
+      box-shadow: 0 0 0 3px gold;
+      margin: 4px 12px;
+      pointer-events: none;
+      cursor: default;
+    }
+
+    .mode-btn.dimmed {
+      transform: scale(0.94);
+      opacity: 0.7;
+      cursor: default;
+      pointer-events: none;
+      margin: 2px;
+    }
+
+    .output-status {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      margin-top: 40px;
+      margin-bottom: 40px;
+    }
+
+    .output-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-weight: bold;
+      font-size: 1.1em;
+    }
+
+    .output-circle {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      background-color: grey;
+      margin-top: 8px;
+      transition: background-color 0.5s ease, transform 0.4s ease;
+    }
+
+    .output-circle.active {
+      background-color: gold;
+      transform: scale(1.05);
+    }
+
+    .ip-clickable {
+      color: #888;
+      font-style: italic;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    .clickable {
+      margin-top: 5px;
+      cursor: pointer;
+      color: #0077cc;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+<div id="header">
+  <div class="title-small">Aplikasi Pemrograman:</div>
+  <div class="title-large">Laman Antarmuka<br>M221 ✕ ESP32</div>
+  <div class="title-footer">Muhammad Nadzarridho Julianto — 231624083</div>
+</div>
+
+<div id="status-bar">
+  <div class="status-cell">
+    <div id="esp32-status">ESP32: ...</div>
+    <div id="esp32-ip" class="clickable">Memuat Alamat IP...</div>
+  </div>
+    <div class="status-cell">
+    <div><span class="indicator" id="M19-indicator"></span></div>
+    <div><button class="tester-btn" id="M9">PING</button></div>
+  </div>
+  <div class="status-cell">
+    <div id="plc-status">PLC: ...</div>
+    <div id="plc-ip" class="clickable">Isikan Alamat IP...</div>
+  </div>
+</div>
+
+<!-- Mode Buttons -->
+<div class="section" id="mode-section">
+  <h2>Operation Modes</h2>
+  <div id="mode-buttons">
+    <button class="btn mode-btn" id="M3">DOL</button>
+    <button class="btn mode-btn" id="M4">ON Delay</button>
+    <button class="btn mode-btn" id="M5">OFF Delay</button>
+    <button class="btn mode-btn" id="M6">Berurutan</button>
+    <button class="btn mode-btn" id="M7">Bergantian</button>
+    <button class="btn mode-btn" id="M8">Star Delta</button>
+  </div>
+</div>
+
+<!-- Output Status -->
+<div class="section">
+  <h2 style="margin-top: 25px;">PLC Output Status</h2>
+  <div class="output-status">
+    <div class="output-item">
+      Q0.0
+      <div class="output-circle" id="M20-indicator"></div>
+    </div>
+    <div class="output-item">
+      Q0.1
+      <div class="output-circle" id="M21-indicator"></div>
+    </div>
+    <div class="output-item">
+      Q0.2
+      <div class="output-circle" id="M22-indicator"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Control Buttons -->
+<div class="section" id="control-section" style="display: none;">
+  <h2>Main Controls</h2>
+  <button class="btn control-btn" id="M0">Back</button>
+  <button class="btn control-btn" id="M1">ON1</button>
+  <button class="btn control-btn" id="M2">ON2</button>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+  // ===================== KONFIGURASI =====================
+  const plcKey = "plc_ip";
+  const espIp = window.location.hostname;
+  let plcIp = localStorage.getItem(plcKey) || "";
+  let espIpReal = "Memuat alamat IP...";
+
+  const controlCoils = ["M0", "M1", "M2"];
+  const modeCoils = ["M3", "M4", "M5", "M6", "M7", "M8"];
+  const allCoils = [...controlCoils, ...modeCoils, "M9"];
+  const indicatorMapping = {
+    M0: "M10", M1: "M11", M2: "M12",
+    M3: "M13", M4: "M14", M5: "M15",
+    M6: "M16", M7: "M17", M8: "M18",
+    M9: "M19"
+  };
+
+  const outputIndicators = {};
+  ["M20", "M21", "M22"].forEach(id => {
+    outputIndicators[id] = document.getElementById(`${id}-indicator`);
+  });
+
+  // ===================== STATUS =====================
+  let espConnected = false, plcConnected = false;
+  let lastSuccess = 0, loadingTimeout, statusInterval;
+  const GRACE_PERIOD = 3500;
+  const TIMEOUT_DURATION = 20000; // 20 seconds timeout
+
+  // ===================== UTILITAS =====================
+  function isValidIp(ip) {
+    return /^\d{1,3}(\.\d{1,3}){3}$/.test(ip) &&
+      ip.split(".").every(n => +n >= 0 && +n <= 255) &&
+      ip !== "0.0.0.0";
+  }
+
+  function updateIpLabels() {
+    document.getElementById("esp32-ip").textContent = espIpReal || espIp;
+
+    const label = isValidIp(plcIp) ? plcIp : "Input alamat IP PLC";
+    document.getElementById("plc-ip").textContent = label;
+  }
+
+  function updateConnectionDisplay() {
+    const espStatus = document.getElementById("esp32-status");
+    const plcStatus = document.getElementById("plc-status");
+
+    espStatus.textContent = `ESP32: ${espConnected ? "Terhubung" : "Terputus"}`;
+    espStatus.style.color = espConnected ? "green" : "red";
+
+    plcStatus.textContent = `PLC: ${plcConnected ? "Terhubung" : "Terputus"}`;
+    plcStatus.style.color = plcConnected ? "green" : "red";
+
+    document.querySelectorAll(".btn").forEach(b => {
+      const disconnected = !(espConnected && plcConnected);
+      b.classList.toggle("disconnected", disconnected);
+      b.disabled = disconnected;
+    });
+  }
+
+  function showLoading() {
+    const el = document.getElementById("esp32-status");
+    el.textContent = "ESP32: Loading...";
+    el.style.color = "orange";
+  }
+
+  function enterStoppedMode() {
+    // Clear all intervals and timeouts
+    clearInterval(statusInterval);
+    clearTimeout(loadingTimeout);
+    
+    // Reset connection states
+    espConnected = false;
+    plcConnected = false;
+    updateConnectionDisplay();
+    
+    // Reset indicators
+    Object.keys(indicatorMapping).forEach(id => {
+      const indId = indicatorMapping[id];
+      const el = document.getElementById(`${indId}-indicator`);
+      el?.classList.remove("active");
+    });
+    
+    // Reset output indicators
+    Object.keys(outputIndicators).forEach(id => {
+      outputIndicators[id]?.classList.remove("active");
+    });
+    
+    document.getElementById("control-section").style.display = "none";
+
+    console.log("Entered stopped mode due to timeout");
+  }
+
+  async function sendToESP32(coil, value) {
+    const payload = { [coil]: value };
+    if (plcIp && !plcConnected) payload.plcIP = plcIp;
+
+    try {
+      const res = await fetch(`http://${espIp}/write`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+        timeout: 5000 // Adding fetch timeout
+      });
+
+      const json = await res.json();
+      espConnected = true;
+      plcConnected = !!json.plcConnected;
+      lastSuccess = Date.now(); // Update last success time
+      updateConnectionDisplay();
+      return true;
+    } catch (e) {
+      console.error("Gagal kirim:", coil, e);
+      return false;
+    }
+  }
+
+  async function sendPlcIpToEsp() {
+    try {
+      const res = await fetch(`http://${espIp}/write`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ plcIP: plcIp }),
+        timeout: 5000
+      });
+      const json = await res.json();
+      plcConnected = !!json.plcConnected;
+      lastSuccess = Date.now(); // Update last success time
+      updateConnectionDisplay();
+      return true;
+    } catch (e) {
+      console.error("Gagal mengirim IP PLC:", e);
+      return false;
+    }
+  }
+
+  async function handleMomentaryPress(coil) {
+    if (coil !== "M9" && (!espConnected || !plcConnected)) return;
+    try {
+      const success = await sendToESP32(coil, true);
+      if (success) {
+        setTimeout(() => sendToESP32(coil, false), 500);
+      }
+    } catch (e) {
+      console.error("Gagal kirim:", coil, e);
+    }
+  }
+
+  async function updateStatus() {
+    if (!espIp) return;
+    const now = Date.now();
+    if (now - lastSuccess > GRACE_PERIOD) showLoading();
+
+    clearTimeout(loadingTimeout);
+    loadingTimeout = setTimeout(() => {
+      espConnected = false;
+      plcConnected = false;
+      updateConnectionDisplay();
+    }, 20000);
+
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 10000);
+      
+      const res = await fetch(`http://${espIp}/read`, {
+        signal: controller.signal
+      });
+      clearTimeout(timeout);
+      
+      const data = await res.json();
+      if (data.espIp) {
+        espIpReal = data.espIp;
+      }
+      updateIpLabels();
+
+      clearTimeout(loadingTimeout);
+      lastSuccess = Date.now();
+      espConnected = true;
+      plcConnected = !!data.plcConnected;
+      updateConnectionDisplay();
+
+      const activeMode = modeCoils.find(id => data[indicatorMapping[id]]);
+
+      // Mode eksklusif: M3–M8
+      modeCoils.forEach(id => {
+        const btn = document.getElementById(id);
+        const isActive = id === activeMode;
+        const shouldDim = !!activeMode && !isActive;
+        btn?.classList.toggle("active", isActive);
+        btn?.classList.toggle("dimmed", shouldDim);
+      });
+
+      // M9 (ping): tidak pernah dimmed, hanya aktif jika feedback-nya true
+      const pingBtn = document.getElementById("M9");
+      const isPingActive = !!data[indicatorMapping["M9"]];
+      pingBtn?.classList.toggle("active", isPingActive);
+      pingBtn?.classList.remove("dimmed"); // pastikan tidak pernah dimmed
+
+      controlCoils.forEach(id => {
+        const btn = document.getElementById(id);
+        btn?.classList.toggle("active", !!data[indicatorMapping[id]]);
+      });
+
+      Object.entries(indicatorMapping).forEach(([btnId, indId]) => {
+        const el = document.getElementById(`${indId}-indicator`);
+        el?.classList.toggle("active", !!data[indId]);
+      });
+
+      Object.entries(outputIndicators).forEach(([id, el]) => {
+        el?.classList.toggle("active", !!data[id]);
+      });
+
+      document.getElementById("control-section").style.display = activeMode ? "block" : "none";
+    } catch (e) {
+      clearTimeout(loadingTimeout);
+      espConnected = false;
+      plcConnected = false;
+      updateConnectionDisplay();
+      console.error("Gagal updateStatus:", e);
+      
+      // Check if we've reached timeout threshold
+      if (Date.now() - lastSuccess > TIMEOUT_DURATION) {
+        enterStoppedMode();
+      }
+    }
+  }
+
+  // ===================== EVENT LISTENER =====================
+  document.getElementById("esp32-ip").addEventListener("click", async () => {
+    const gantiWifi = confirm(
+      "Apakah Anda ingin mengganti konfigurasi WiFi ESP32?\n\nKlik OK untuk ganti WiFi, Batal untuk tetap di halaman ini."
+    );
+    if (gantiWifi) {
+      window.location.href = "/setup-wifi";
+    }
+  });
+
+  document.getElementById("plc-ip").addEventListener("click", async () => {
+    try {
+      // Ambil IP saat ini dari ESP (currentPlcIP)
+      const res = await fetch(`http://${espIp}/read`);
+      const json = await res.json();
+      const currentIp = json.currentPlcIP || "Tidak diketahui";
+
+      const message =
+        `Alamat yang dipakai oleh ESP32: ${currentIp}\n\n.` +
+        `Masukkan alamat IP PLC baru:\n` +
+        `Ketik "hapus" untuk menghapus IP tersimpan.`;
+
+      const ip = prompt(message, plcIp || "Contoh: 192.168.32.32");
+
+      if (ip === null) return; // User klik Cancel
+
+      const trimmed = ip.trim().toLowerCase();
+      if (trimmed === "hapus") {
+        localStorage.removeItem(plcKey);
+        plcIp = "";
+        updateIpLabels();
+        alert("Alamat IP PLC dihapus dari penyimpanan.");
+        return;
+      }
+
+      if (isValidIp(trimmed)) {
+        plcIp = trimmed;
+        localStorage.setItem(plcKey, plcIp);
+        updateIpLabels();
+        if (espConnected) {
+          const success = await sendPlcIpToEsp();
+          if (success) {
+            lastSuccess = Date.now(); // Reset timeout timer
+          }
+        }
+      } else {
+        alert("Format IP PLC tidak valid!");
+      }
+    } catch (err) {
+      alert("Gagal mengambil IP dari ESP32.");
+      console.error(err);
+    }
+  });
+
+  allCoils.forEach(id => {
+    const btn = document.getElementById(id);
+    btn?.addEventListener("click", () => handleMomentaryPress(id));
+  });
+
+  // ===================== INISIALISASI =====================
+  updateIpLabels();
+  lastSuccess = Date.now(); // Initialize last success time
+  updateStatus();
+  statusInterval = setInterval(updateStatus, 750);
+  handleMomentaryPress("M9"); // ping otomatis
+});
+</script>
+
+
+</body>
+</html>
+               </textarea>
+         </div>
       </div> 
    </div>  
  </div>
@@ -253,38 +826,4 @@
       </div> 
    </div>  
 </div>  
- 
-</div>
-
-<div id="tab10">
-   <div class="container-body">
-      <div class="container-content">
-         <div class="content"><h2 ><u>Ujian Akhir Semester</u></h2></div>
-         <div class="content"><h3 >--- Identitas peserta ---</h3></div>
-         <p class="isi-content" style="text-align: justify; line-height: 1.5;">
-            Kumpulan tugas yang ditampilkan dalam laman web ini ditujukan sebagai salah satu penilaian Mata Kuliah Aplikasi Pemrograman
-            dalam Pendidikan Diploma Empat Program Studi Teknik Pendingin dan Tata Udara di Jurusan Refrigerasi dan Tata Udara.<br><br>
-            <p class="isi-content" style="width: 95%;">
-               Dikerjakan oleh: <br>
-               Nama: Muhammad Nadzarridho Julianto <br>
-               Kelas: 2C-PTU <br>
-               NIM: 231624084 <br>
-               Dosen Pengampu: Pak Pratikto <br>
-               Mata kuliah: Aplikasi Pemrograman <br>
-               Waktu ujian: Senin, 10 Juni 2025 <br>
-            </p>
-         </p>   
-      </div> 
-   </div>
    
-   <div class="container-body">
-      <div class="container-content">
-         <div class="content"><h2 ><u>Bukti Kehadiran</u></h2></div>
-         <div class="content"><h3 >--- Aku duduk sama siapa ya? ---</h3></div>
-         <div class="content">
-            <img src="assets/image/JTRA.png" alt="Girl in a jacket" width="500" height="500">
-         </div>
-      </div>
-   </div>   
-</div>
-

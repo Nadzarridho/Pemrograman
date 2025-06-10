@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" type="image/png" href="icon.ico" />
+  <title>Setup WIFI ESP32</title>
+  <style>
+    /* Reset margin & padding */
+    * {
+      margin: 0; 
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #fefefe;
+      color: #222;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      user-select: none;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 1.5rem;
+      color: #004085;
+      text-shadow: 0 1px 1px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    form {
+      background: #f1f1f1;
+      padding: 2rem 2.5rem;
+      border-radius: 8px;
+      box-shadow: 5px 5px 10px rgb(0 0 0 / 0.1);
+      width: 100%;
+      max-width: 360px;
+    }
+
+    label {
+      display: block;
+      margin-top: 1rem;
+      font-weight: 600;
+      color: #333;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      padding: 0.6rem 0.75rem;
+      margin-top: 0.3rem;
+      border: 1.5px solid #ccc;
+      border-radius: 5px;
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+    }
+
+    input[type="text"]:focus,
+    input[type="password"]:focus {
+      border-color: #007BFF;
+      outline: none;
+      box-shadow: 0 0 6px #a3cdfd;
+    }
+
+    button {
+      margin-top: 2rem;
+      padding: 0.75rem;
+      width: 100%;
+      background-color: #007BFF;
+      border: none;
+      border-radius: 5px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    #status {
+      margin-top: 1.25rem;
+      font-size: 1rem;
+      font-weight: 600;
+      text-align: center;
+      color: #555;
+      min-height: 1.2em;
+      user-select: none;
+    }
+
+    #maincontent.blur {
+    overflow: hidden;
+    filter: blur(5px);
+    pointer-events: none;
+  
+  }
+    
+  .modal {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+  }
+  .modal-content {
+    background: white;
+    padding: 1.5rem 2rem;
+    border-radius: 8px;
+    max-width: 360px;
+    text-align: left;
+  }
+  .modal-content h2 {
+    margin-bottom: 1rem;
+  }
+  .modal-content ol {
+    margin-left: 1.2rem;
+    margin-bottom: 1rem;
+  }
+  .modal-content button {
+    padding: 0.5rem 1rem;
+    background-color: #007BFF;
+    border: none;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .modal-content button:hover {
+    background-color: #0056b3;
+  }
+  </style>
+</head>
+<body>
+<div id="mainContent">
+
+  <div style="width:100%; max-width:360px; margin-bottom: 1rem; text-align:center;">
+        <a href="/" 
+        style="text-decoration:none; color:#007BFF; font-weight:600; font-size:1rem;">
+        ← Kembali ke Web Utama<br>
+        </a>
+    </div>
+  <h1>SETUP ESP32-RIDHO</h1>
+
+  <!-- Login section -->
+  <form id="loginForm" autocomplete="off" spellcheck="false">
+    <label for="username">Username</label>
+    <input type="text" id="username" required placeholder="hubungi admin!" required />
+
+    <label for="loginPassword">Password</label>
+    <input type="password" id="loginPassword" required placeholder="********" minlength="8" required/>
+
+    <button type="submit">Login</button>
+  </form>
+
+  <!-- Hidden WiFi setup section -->
+  <form id="wifiForm" style="display:none" autocomplete="off" spellcheck="false">
+    <label for="ssid">SSID</label>
+    <input type="text" id="ssid" name="ssid" placeholder="Masukkan SSID WiFi" required/>
+
+    <label for="password">Password</label>
+    <input type="password" id="password" name="password" placeholder="Masukkan password WiFi" minlength="8" required />
+
+    <button type="submit">Simpan & Restart</button>
+
+  </div>
+
+<!-- Modal Umum untuk Hasil Setup -->
+<div id="wifiResultModal" class="modal" style="display:none;">
+  <div class="modal-content">
+    <h2>Konfigurasi WiFi Tersimpan</h2>
+    <ol>
+      <li>ESP32 akan restart dalam beberapa detik dan mencoba terhubung ke jaringan baru.</li>
+      <li>Akses kembali halaman utama melalui <strong>esp32-ridho.local</strong> di browser.</li>
+      <li>Namun pastikan perangkat kamu berada di <strong>jaringan yang sama</strong> dengan yang diset.</li>
+      <li>Jika gagal, ESP32 akan aktif dalam mode <strong>Access Point</strong> dengan <br>SSID: <em>SETUP ESP32-RIDHO</em><br>Password: <em>11111113</em></li>
+    </ol>
+    <button id="closeWifiModal">Tutup</button>
+  </div>
+</div>
+
+  <div id="status"></div>
+
+<script>
+  //   Cegah klik kanan dan tombol tertentu (F12, Ctrl+Shift+I/J, Ctrl+U)
+  document.addEventListener('contextmenu', e => e.preventDefault());
+  document.onkeydown = function(e) {
+    if (
+      e.key === "F12" || 
+      (e.ctrlKey && e.shiftKey && (e.key === "I" || e.key === "J")) || 
+      (e.ctrlKey && e.key === "U")
+    ) {
+      e.preventDefault();
+    }
+  }
+
+  const loginForm = document.getElementById("loginForm");
+  const wifiForm = document.getElementById("wifiForm");
+  const status = document.getElementById("status");
+  const modal = document.getElementById("wifiResultModal");
+  const mainContent = document.getElementById("mainContent");
+  const closeModalBtn = document.getElementById("closeWifiModal");
+
+  const USERS = {
+    "Nadzarridho": "rindukamu",
+    "Pratikto": "11111113",
+  };
+
+  loginForm.onsubmit = (e) => {
+    e.preventDefault();
+    const user = document.getElementById("username").value.trim();
+    const pass = document.getElementById("loginPassword").value.trim();
+
+    if (USERS[user] === pass) {
+      loginForm.style.display = "none";
+      wifiForm.style.display = "block";
+      status.textContent = `Login berhasil sebagai "${user}". Silakan isi konfigurasi WiFi.`;
+      status.style.color = "green";
+    } else {
+      status.textContent = "Username atau password salah.";
+      status.style.color = "crimson";
+    }
+  };
+
+  wifiForm.onsubmit = async (e) => {
+    e.preventDefault();
+    const ssid = wifiForm.ssid.value.trim();
+    const password = wifiForm.password.value.trim();
+
+    if (password.length < 8) {
+      status.style.color = "crimson";
+      status.textContent = "Password WiFi harus minimal 8 karakter.";
+      return;
+    }
+
+    status.style.color = "#555";
+    status.textContent = "Menyimpan konfigurasi WiFi...";
+
+    try {
+      const res = await fetch("/setup-wifi", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ssid, password }),
+      });
+
+      let json = {};
+      try {
+        json = await res.json();
+      } catch (_) {}
+
+      if (res.ok && json.success) {
+        status.style.color = "green";
+        status.textContent = "Berhasil! ESP32 akan restart...";
+        setTimeout(showWifiModal, 3000);
+      } else {
+        status.style.color = "crimson";
+        status.textContent = json.error || "Gagal menyimpan konfigurasi.";
+      }
+
+    } catch (err) {
+      console.error("Fetch error:", err);
+      status.style.color = "crimson";
+      status.textContent = "Terjadi kesalahan koneksi.";
+    }
+  };
+
+  function showWifiModal() {
+    if (modal && mainContent) {
+      modal.style.display = "flex";
+      mainContent.classList.add("blur");
+    }
+  }
+
+  closeModalBtn.onclick = () => {
+    if (modal && mainContent) {
+      modal.style.display = "none";
+      mainContent.classList.remove("blur");
+      location.reload(); // atau redirect jika perlu
+    }
+  };
+</script>
+
+</body>
+
+</html>

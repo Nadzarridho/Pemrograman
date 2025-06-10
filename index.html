@@ -1,83 +1,196 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <title>PLC Control Panel</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="assets/image/icon.ico" />
+    <title>UAS Pemrograman</title>
+    <link rel="stylesheet" href="style.css">
+   <script>
+      MathJax = {
+         tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']]
+         },
+         svg: {
+            fontCache: 'global'
+         }
+      };
+   </script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
 </head>
 <body>
-
-<!-- Contoh struktur status bar baru -->
-<div id="status-bar">
-  <div class="status-cell">
-    <div id="esp32-status">ESP32: ...</div>
-    <div id="esp32-ip" style="cursor: pointer; color: #0077cc; text-decoration: underline;">Isikan Alamat IP ESP32</div>
-  </div>
-  <div class="status-cell">
-    <div id="plc-status">PLC: ...</div>
-    <div id="plc-ip" style="cursor: pointer; color: #0077cc; text-decoration: underline;">Isikan Alamat IP PLC</div>
-  </div>
-  <div class="status-cell">
-    <div><span class="indicator" id="M19-indicator"></span></div>
-    <div><button class="tester-btn" id="M9">PING</button></div>
-  </div>
+    <!-- NAVIGATION BAR -->
+<div class="wraper-navbar">
+   <div class="container-navbar" id="header">
+      <img class="navbar-icon" src="assets/image/JTRA.png"/>
+      <h2 class="navbar-text">EXSUME PEMROGRAMAN</h2>
+      <img class="navbar-profile" id="prfToggle" src="assets/image/Profile.jpg"/>
+      <div class="popup-container" id="prfPopup">
+         <ul>
+             <li id="mhsToggle">
+               <svg src="assets/icon/sun-2-svgrepo-com.svg" class="modeIcon"  viewBox="0 0 24 24">
+                  <circle xmlns="http://www.w3.org/2000/svg" cx="12" cy="6" r="4" stroke="currentColor" fill="currentColor"/>
+                  <path xmlns="http://www.w3.org/2000/svg" d="M20 17.5C20 19.9853 20 22 12 22C4 22 4 19.9853 4 17.5C4 15.0147 7.58172 13 12 13C16.4183 13 20 15.0147 20 17.5Z" 
+                  stroke="currentColor" fill="currentColor"/></svg>
+               </svg>Tentang mahasiswa</li>
+             <li id="modeToggle"></li>
+             <li id="bgmToggle">
+               <svg xmlns="http://www.w3.org/2000/svg" class="modeIcon" viewBox="0 0 24 24">
+                  <path stroke="currentColor" fill="currentColor" d="M12.75 12.508L21.25 9.108V14.7609C20.7449 14.4375 20.1443 14.25 19.5 14.25C17.7051 14.25 16.25 15.7051 16.25 17.5C16.25 19.2949 17.7051 20.75 19.5 20.75C21.2949 20.75 22.75 19.2949 22.75 17.5C22.75 17.5 22.75 17.5 22.75 17.5L22.75 7.94625C22.75 6.80342 22.75 5.84496 22.6696 5.08131C22.6582 4.97339 22.6448 4.86609 22.63 4.76597C22.5525 4.24426 22.4156 3.75757 22.1514 3.35115C22.0193 3.14794 21.8553 2.96481 21.6511 2.80739C21.6128 2.77788 21.573 2.74927 21.5319 2.7216L21.5236 2.71608C20.8164 2.2454 20.0213 2.27906 19.2023 2.48777C18.4102 2.68961 17.4282 3.10065 16.224 3.60469L14.13 4.48115C13.5655 4.71737 13.0873 4.91751 12.712 5.1248C12.3126 5.34535 11.9686 5.60548 11.7106 5.99311C11.4527 6.38075 11.3455 6.7985 11.2963 7.25204C11.25 7.67831 11.25 8.19671 11.25 8.80858V16.7609C10.7448 16.4375 10.1443 16.25 9.5 16.25C7.70507 16.25 6.25 17.7051 6.25 19.5C6.25 21.2949 7.70507 22.75 9.5 22.75C11.2949 22.75 12.75 21.2949 12.75 19.5C12.75 19.5 12.75 19.5 12.75 19.5L12.75 12.508Z"/>
+                  <path stroke="currentColor" fill="currentColor" d="M7.75 2C7.75 1.58579 7.41421 1.25 7 1.25C6.58579 1.25 6.25 1.58579 6.25 2V7.76091C5.74485 7.4375 5.14432 7.25 4.5 7.25C2.70507 7.25 1.25 8.70507 1.25 10.5C1.25 12.2949 2.70507 13.75 4.5 13.75C6.29493 13.75 7.75 12.2949 7.75 10.5V5.0045C8.44852 5.50913 9.27955 5.75 10 5.75C10.4142 5.75 10.75 5.41421 10.75 5C10.75 4.58579 10.4142 4.25 10 4.25C9.54565 4.25 8.9663 4.07389 8.51159 3.69837C8.0784 3.34061 7.75 2.79785 7.75 2Z"/>
+                  </svg>Tayangkan BGM</li>
+         </ul>
+     </div>           
+   </div>
 </div>
 
-  <!-- Mode Buttons -->
-  <div class="section" id="mode-section">
-    <h2>Operation Modes</h2>
-    <div id="mode-buttons">
-      <button class="btn mode-btn" id="M3">DOL</button>
-      <button class="btn mode-btn" id="M4">ON Delay</button>
-      <button class="btn mode-btn" id="M5">OFF Delay</button>
-      <button class="btn mode-btn" id="M6">Berurutan</button>
-      <button class="btn mode-btn" id="M7">Bergantian</button>
-      <button class="btn mode-btn" id="M8">Star Delta</button>
-    </div>
-  </div>
+   <!-- Overlay -->
+   <div class="overlay" id="overlay"></div>
 
-  <!-- Output Status -->
-  <div class="section">
-    <h2 style="margin-top: 25px;">PLC Output Status</h2>
-    <div class="output-status">
-      <div class="output-item">
-        Q0.0
-        <div class="output-circle" id="M20-indicator"></div>
+   <div class="mhsPopup" id="mhsPopup">
+      <div class="popHeader">
+         <h2 class="popHText">Tentang Mahasiswa</h2>
+         <svg xmlns="http://www.w3.org/2000/svg" class="close-btn" id="close-btn" viewBox="0 0 1024 1024">
+            <path stroke="currentColor" fill="currentColor" d="M195.2 195.2a64 64 0 0 1 90.496 0L512 421.504 738.304 195.2a64 64 0 0 1 90.496 90.496L602.496 512 828.8 738.304a64 64 0 0 1-90.496 90.496L512 602.496 285.696 828.8a64 64 0 0 1-90.496-90.496L421.504 512 195.2 285.696a64 64 0 0 1 0-90.496z"/>
+         </svg>
       </div>
-      <div class="output-item">
-        Q0.1
-        <div class="output-circle" id="M21-indicator"></div>
+      <div class="mhsContent">
+         <div class="mhsQNA">
+            Kamu siapa ?
+            <p>Namaku @Nadzarridho Julianto, silakan cek media sosialku! &#x1F917</p>
+         </div>
+         <div class="mhsQNA">
+            Kuliah dimana ?
+            <p>Sekolah di Politeknik Negeri Bandung.</br>
+            <i>euy, ieu, eaa...</i> &#x1F61C</p>
+         </div>
+         <div class="mhsQNA">
+            Kelas berapa?
+            <p>Kelas D4 2C-PTU. </br>NIM 231624083. </br>Suka duduk paling depan. &#128572</p>
+         </div>
+         <div class="mhsQNA">
+            Kenapa kuliah jauh?
+            <p>Sebenarnya tidak mau juga, tetapi jurusannya hanya ada di sana. &#x1F643</p>
+         </div>
+         <div class="mhsQNA">
+            Matkul kesukaan ?
+            <p>Elektronika! Instalasi Sistem Refrigerasi!</br>
+               praktiknya seru! &#x1f929</p>
+         </div>
+         <div class="mhsQNA">
+            Mimpinya apa ?
+            <p>Rahasia... &#128521</br>
+               Untuk saat ini ingin lulus kuliah dengan aman saja.</p>
+         </div>
+         <div class="mhsQNA">
+            Punya hobi ?
+            <p>Tentu!</br>
+            Aku suka budaya Jepang: manga, anime, musik. &#128122</p>
+         </div>
+         <div class="mhsQNA">
+            Pilihan makanan ?
+            <p>Sate ayam bumbu kacang &#127841,</br>
+               pastel mayones &#129375,
+               dan susu kopi &#129371.
+            </div>
       </div>
-      <div class="output-item">
-        Q0.2
-        <div class="output-circle" id="M22-indicator"></div>
-      </div>
-    </div>
-  </div>
+   </div>
 
-  <!-- Control Buttons -->
-  <div class="section" id="control-section" style="display: none;">
-    <h2>Main Controls</h2>
-    <button class="btn control-btn" id="M0">Back</button>
-    <button class="btn control-btn" id="M1">ON1</button>
-    <button class="btn control-btn" id="M2">ON2</button>
-  </div>
+   <div class="bgmPopup" id="bgmPopup">
+      <div class="popHeader">
+         <h2 class="popHText">Tentukan tema bgm</h2>
+         <svg xmlns="http://www.w3.org/2000/svg" class="close-btn" id="close-btn" viewBox="0 0 1024 1024">
+            <path stroke="currentColor" fill="currentColor" d="M195.2 195.2a64 64 0 0 1 90.496 0L512 421.504 738.304 195.2a64 64 0 0 1 90.496 90.496L602.496 512 828.8 738.304a64 64 0 0 1-90.496 90.496L512 602.496 285.696 828.8a64 64 0 0 1-90.496-90.496L421.504 512 195.2 285.696a64 64 0 0 1 0-90.496z"/>
+         </svg>
+      </div>
+      <audio id="bgm" loop></audio>
+      <div class="bgmContent">
+         <div class="bgmOption" id="bgmSenang">
+            <p class="bgmEmoji">&#x1F60A</p>
+            <p>Senang</p>
+         </div>
+         <div class="bgmOption" id="bgmSantai">
+            <p class="bgmEmoji">&#x1F609</p>
+            <p>Santai</p>
+         </div>
+         <div class="bgmOption"id="bgmSuka">
+            <p class="bgmEmoji">&#x1F633</p>
+            <p>Suka</p>
+         </div>
+         <div class="bgmOption" id="bgmSuntuk">
+            <p class="bgmEmoji">&#x1F62A</p>
+            <p>Suntuk</p>
+         </div>
+         <div class="bgmOption" id="bgmSedih">
+            <p class="bgmEmoji">&#x1F614</p>
+            <p>Sedih</p>
+         </div>
+      </div>
+   </div>
+  
+    <div id="tab-content">
+      <!-- Tab content will be inserted here -->
+    </div>
+
+   <!-- FOOTER -->
+   <div class="footer">
+      <div class="footer-tabs">
+         <div class="tab-button" style="min-width: 55px ;margin-right: clamp(10px, 1.1vw, 20px); margin-left: clamp(10px, 1.3vw, 25px); pointer-events: none;">DIV:</div>
+         <div class="tab-button" data-tab="0">ID</div>
+         <div class="tab-button" data-tab="1">PDF</div>
+         <div class="tab-button" data-tab="2">MP4</div>
+         <div class="tab-button" data-tab="3">JPG</div>
+         <div class="tab-button" data-tab="4">HTML</div>
+         <div class="tab-button" data-tab="5">SRC</div>
+         <div class="tab-button" data-tab="6">LIB</div>
+         <div class="tab-button" data-tab="7">Lainnya</div>     
+
+      </div>
+      <div class="footer-time">
+         <p id="footer-clock"></p>
+         <p id="footer-date"></p>
+      </div>
+   </div>
+
+<script>
+function loadTabContent(tabId) {
+  fetch('tabs.html')
+    .then(response => response.text())
+    .then(html => {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+      let selectedTab = doc.getElementById('tab' + tabId);
+
+      if (!selectedTab) {
+        // Jika tab yang diminta tidak ada, cari tabX sebagai fallback
+        selectedTab = doc.getElementById('tabX');
+      }
+      document.getElementById('tab-content').innerHTML = selectedTab 
+        ? selectedTab.innerHTML 
+        : '<p>Belum beres bos</p>';
+      // Inisialisasi ulang script sesuai tab yang aktif
+      setActiveTabButton(tabId);
+      setEqualHeight();
+    });
+}
+
+  // Pasang event listener ke semua tombol tab
+  document.querySelectorAll('.tab-button').forEach(button => {
+    button.addEventListener('click', () => {
+      const tabId = button.getAttribute('data-tab');
+      loadTabContent(tabId);
+    });
+  });
+
+  // Muat tab awal
+  window.addEventListener('load', () => {
+  loadTabContent(0); // otomatis buka tab pertama
+});
+
+</script>
 
 <script src="script.js"></script>
-<script> 
-document.addEventListener("DOMContentLoaded", () => {
-    espIp = localStorage.getItem("esp32IP") || "";
-    if (!espIp) {
-        espIp = prompt("Masukkan IP ESP32:");
-        if (espIp) localStorage.setItem("esp32IP", espIp);
-    }
-
-    if (espIp) {
-        // "Nebeng" momentary press M9 untuk trigger ping saat load
-        handleMomentaryPress("M9");
-    }
-});
-</script>
 
 </body>
 </html>
